@@ -19,6 +19,7 @@ public class TestConnection {
 
         rs.next(); // currently we are at the very first row
 
+
         System.out.println("first column value using index: --> " +  rs.getString(1)   );
     }
 
