@@ -26,10 +26,10 @@ public class DB_Utility {
     // and return ResultSet Object
     public static ResultSet runQuery(String query){
 
-        ResultSet rs  = null;
+        // ResultSet rs  = null;
         // reusing the connection built from previous method
         try {
-            Statement stmnt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            stmnt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             rs = stmnt.executeQuery(query) ;
 
         } catch (SQLException e) {
@@ -42,25 +42,61 @@ public class DB_Utility {
     // create a method to clean up all the connection statemnet and resultset
     public static void destroy() {
         try {
+
             rs.close();
             stmnt.close();
             conn.close();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
     }
 
-    public static void main(String[] args) throws SQLException {
+    /**
+     * count how many row we have
+     * @return the row count of the resultset we got
+     */
+    public static int getRowCount(){
 
-        createConnection();
+        int rowCount = 0;
 
-        ResultSet rs =  runQuery("SELECT * FROM REGIONS");
+        try {
+            rs.last();
+            rowCount = rs.getRow();
 
-        // print out second column first row
-        rs.next();
-        System.out.println(" rs.getString(2) = " + rs.getString(2)   );
+            //move the cursor back to beforeFirst location to avoid accident
+            rs.beforeFirst();
 
+        } catch (SQLException e) {
 
+            System.out.println("ERROR WHILE GETTING ROW COUNT "+ e.getMessage() );
+        }
+
+        return rowCount;
+
+    }
+
+    /**
+     * Get the column count
+     * @return count of column the result set have
+     */
+
+    public  static int getColumnCount(){
+
+        int columnCount = 0;
+
+        try {
+
+            ResultSetMetaData rsmd = rs.getMetaData();
+            columnCount = rsmd.getColumnCount();
+
+        } catch (SQLException e) {
+
+            System.out.println("ERROR WHILE COUNTING THE COLUMNS " + e.getMessage() );
+
+        }
+        return columnCount;
     }
 
 
